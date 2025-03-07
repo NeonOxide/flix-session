@@ -1,3 +1,5 @@
+use SesChans.recv_transformer
+use SesChans.helper_boxer
 use Channel.send;
 import java.lang.Object
 enum Send[_a, _b]
@@ -86,14 +88,14 @@ type alias TypedChannel[elem] = (Sender[elem], Receiver[elem])
 
 enum Cap[_e, _r]
 
-enum Session[_s, _ss, elem](SessionChannel -> elem \ Chan + NonDet )
+enum Session[_s, _ss, elem](SessionChannel -> elem \ Chan + NonDet + IO )
 
 instance IxMonad[Session] {
     pub def ixreturn(e: a) : Session[i, i, a] =  
         Session.Session(_ -> checked_ecast(e))
 
     // Need to fix, maybe add a new effect set parameter to the sessions
-    pub def ixbind(e: Session[i, j, a], f: a -> Session[j, k, b] \e1 ): Session[i, k, b] = 
+    pub def ixbind(e: Session[i, j, a], f: a -> Session[j, k, b] \ IO): Session[i, k, b] = 
         Session.Session( nc ->
             let Session.Session(fchan1) = e;
             let Session.Session(fchan2) = 
@@ -106,17 +108,7 @@ instance IxMonad[Session] {
 
 type alias Proto[e, a, r] = Session[Cap[e, Send[a, r]], Cap[e, r], Unit]
 
-pub def session_send(elem: a) : 
-    Session[Cap[e, Send[a, r]], Cap[e, r], Unit] = 
-    Session.Session(match (s, _r) -> 
-        checked_ecast(Channel.send(unchecked_cast(elem as Object), s))
-        )
 
-pub def session_recv() : 
-    Session[Cap[e, Receive[a, r]], Cap[e, r], a] = 
-    Session.Session(match (_s, r) -> 
-        unchecked_cast(Channel.recv(r) as a)
-        )
 
 pub def session_close() : 
     Session[Cap[e, Empty], Unit, Unit] = 
@@ -146,7 +138,7 @@ pub def session_offer (opt1: Session[Cap[e, l], u, a],
         let choice = Channel.recv(r) |> fromObject;
         if (choice) 
             let Session.Session(fchan1) = opt1;
-            fchan1 (c) 
+            fchan1 (c)
         else 
             let Session.Session(fchan2) = opt2;
             fchan2 (c)
@@ -170,7 +162,7 @@ enum Rendezvous[_protocol](TypedChannel[SessionChannel])
 pub def new_rendezvous() : Rendezvous[r] \ Chan =
     Rendezvous.Rendezvous(Channel.unbuffered())
 
-pub def session_accept(ren: Rendezvous[r], ses: Session[Cap[Unit, r], Unit, a]) : a  \ Chan + NonDet = 
+pub def session_accept(ren: Rendezvous[r], ses: Session[Cap[Unit, r], Unit, a]) : a  \ Chan + NonDet + IO = 
     let Rendezvous.Rendezvous((s, _r)) = ren;
     let Session.Session(fchan) = ses; 
     let comm_chan = Channel.unbuffered(); 
@@ -180,18 +172,21 @@ pub def session_accept(ren: Rendezvous[r], ses: Session[Cap[Unit, r], Unit, a]) 
 
 pub def session_request(ren: Rendezvous[r], 
                         ses: Session[Cap[ Unit, HasDual.Dual[r]], Unit, a]): 
-                        a \ Chan + NonDet 
+                        a \ Chan + NonDet + IO 
                     with HasDual[r] = 
     let Rendezvous.Rendezvous((_s, r)) = ren;
     let Session.Session(fchan) = ses; 
     Channel.recv(r) |> fchan
 
 
-// TODO: Take into account typematch to box and unbox 
-// primitive values if there is no way of making it better
+
 
 pub def toObject(e: a) : Object =
-    unchecked_cast(e as Object)
+    helper_boxer(e)
 
+pub def fromObjectBool(o: Object) : Bool = 
+    recv_transformer(o, _ -> false)
+
+// Right now crashes if a primitive is used
 pub def fromObject(o: Object) : a = 
-    unchecked_cast(o as a)
+    recv_transformer(o, unreachable!())
