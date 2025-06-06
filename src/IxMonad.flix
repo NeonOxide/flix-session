@@ -20,7 +20,7 @@ pub trait IxMonad[m: Type -> Type -> Type -> Eff -> Type] {
      * - `value`: The value to lift into the monad
      * - Returns a monadic value with identical initial and final states
      */
-    pub def ixreturn(value: a): m[init, init, a, effect]
+    pub def ixreturn(value: a): m[init, init, a, {}]
 
     /**
      * Sequential composition of indexed monadic operations.

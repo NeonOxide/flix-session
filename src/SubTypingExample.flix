@@ -22,7 +22,7 @@ mod SubTypingExample {
                     Receive[Int32, Send[Int32, Empty]]]],
         Unit,
         Unit,
-        IO + Chan + NonDet
+        Chan + NonDet
     ] = {
             session_offer_2(
                 option1 =
@@ -55,7 +55,7 @@ mod SubTypingExample {
     ] = {
             session_offer_2(
                 option1 =
-                    session_close(),
+                    session_close() |> session_subeffect,
                 option2 = 
                     session_recv() >>>=
                     ((a: Int32) -> 
@@ -95,24 +95,29 @@ mod SubTypingExample {
      * It uses two different servers with different first parts of the protocols
      * (NOTE: Right now it does not work but I think it may be a compiler error
      * because removing one of the handlers make the example work, and client is 
-     * polymorphic on its argument, it should be able to work with both )
+     * polymorphic on its argument, it should be able to work with both. 
+     * EXTRA NOTE: It fails when they are in different regions for some reason, will talk with
+     * Magnus )
      */
     pub def execute_subtyping_example(): Unit \ IO + Chan + NonDet = {
         let handlr1 = _ -> {
             region sessionRegion {
                 let rendezvousPoint = new_rendezvous();
                 spawn session_accept(rendezvousPoint, server_1()) @ sessionRegion;
-                session_request(rendezvousPoint, client())
+                session_request(rendezvousPoint, client());
+                let rendezvousPoint2 = new_rendezvous();
+                spawn session_accept(rendezvousPoint2, server_2()) @ sessionRegion;
+                session_request(rendezvousPoint2, client())
             }
         };
-        let handlr2 = _ -> {
-            region sessionRegion {
-                let rendezvousPoint = new_rendezvous();
-                spawn session_accept(rendezvousPoint, server_2()) @ sessionRegion;
-                session_request(rendezvousPoint, client())
-            }
-        };
-        Console.handle(handlr2)();
+        //let handlr2 = _ -> {
+        //    region sessionRegion2 {
+        //        let rendezvousPoint2 = new_rendezvous();
+        //        spawn session_accept(rendezvousPoint2, server_2()) @ sessionRegion2;
+        //        session_request(rendezvousPoint2, client())
+        //    }
+        //};
+        //Console.handle(handlr2)();
         Console.handle(handlr1)()
         
     }

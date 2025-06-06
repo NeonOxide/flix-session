@@ -119,8 +119,8 @@ pub def fork_session(ses: MultiSession[x, Unit, Unit, _effect]) : MultiSession[x
  */
 instance IxMonad[MultiSession] {
     // Return a value in the Session monad without changing protocol state
-    pub def ixreturn(value: a) : MultiSession[state, state, a, effect] =  
-        MultiSession.MultiSession(_ -> checked_ecast(value))
+    pub def ixreturn(value: a) : MultiSession[state, state, a, {}] =  
+        MultiSession.MultiSession(_ -> value)
 
     // Sequential composition of Session actions
     pub def ixbind(

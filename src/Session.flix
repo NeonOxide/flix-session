@@ -239,8 +239,8 @@ enum Session[_startState: Type, _endState: Type, resultType: Type, effects: Eff]
  */
 instance IxMonad[Session] {
     // Return a value in the Session monad without changing protocol state
-    pub def ixreturn(value: a) : Session[state, state, a, effect] =  
-        Session.Session(_ -> checked_ecast(value))
+    pub def ixreturn(value: a) : Session[state, state, a, {}] =  
+        Session.Session(_ -> value)
 
     // Sequential composition of Session actions
     pub def ixbind(
@@ -266,18 +266,16 @@ instance IxMonad[Session] {
  * Close a session channel, terminating the protocol
  */
 pub def session_close() : 
-    Session[Cap[_env, Empty], Unit, Unit, _effect] = 
-    Session.Session(_channel -> checked_ecast(()))
+    Session[Cap[_env, Empty], Unit, Unit, {}] = 
+    Session.Session(_channel -> ())
 
 /**
  * Select the 1st branch in a choice out of 2 elements
  */
 pub def sel_1_from_2(): 
-    Session[Cap[_env, ChoiceSelection2[protocol1, protocol2]], Cap[_env, protocol1], Unit, _effect + Chan] = 
+    Session[Cap[_env, ChoiceSelection2[protocol1, protocol2]], Cap[_env, protocol1], Unit, Chan] = 
     Session.Session(match (sender, _receiver) -> 
-        checked_ecast(
-            Channel.send(1i8 |> toObject, sender)
-        )
+        Channel.send(1i8 |> toObject, sender)
     )
 
 
@@ -285,11 +283,9 @@ pub def sel_1_from_2():
  * Select the 2nd branch in a choice out of 2 elements
  */
 pub def sel_2_from_2(): 
-    Session[Cap[_env, ChoiceSelection2[protocol1, protocol2]], Cap[_env, protocol2], Unit, _effect + Chan] = 
+    Session[Cap[_env, ChoiceSelection2[protocol1, protocol2]], Cap[_env, protocol2], Unit, Chan] = 
     Session.Session(match (sender, _receiver) -> 
-        checked_ecast(
-            Channel.send(2i8 |> toObject, sender)
-        )
+        Channel.send(2i8 |> toObject, sender)
     )
 
 
@@ -297,11 +293,9 @@ pub def sel_2_from_2():
  * Select the 1st branch in a choice out of 3 elements
  */
 pub def sel_1_from_3(): 
-    Session[Cap[_env, ChoiceSelection3[protocol1, protocol2, protocol3]], Cap[_env, protocol1], Unit, _effect + Chan] = 
+    Session[Cap[_env, ChoiceSelection3[protocol1, protocol2, protocol3]], Cap[_env, protocol1], Unit, Chan] = 
     Session.Session(match (sender, _receiver) -> 
-        checked_ecast(
-            Channel.send(1i8 |> toObject, sender)
-        )
+        Channel.send(1i8 |> toObject, sender)
     )
 
 
@@ -309,11 +303,9 @@ pub def sel_1_from_3():
  * Select the 2nd branch in a choice out of 3 elements
  */
 pub def sel_2_from_3(): 
-    Session[Cap[_env, ChoiceSelection3[protocol1, protocol2, protocol3]], Cap[_env, protocol2], Unit, _effect + Chan] = 
+    Session[Cap[_env, ChoiceSelection3[protocol1, protocol2, protocol3]], Cap[_env, protocol2], Unit, Chan] = 
     Session.Session(match (sender, _receiver) -> 
-        checked_ecast(
-            Channel.send(2i8 |> toObject, sender)
-        )
+        Channel.send(2i8 |> toObject, sender)
     )
 
 
@@ -321,11 +313,9 @@ pub def sel_2_from_3():
  * Select the 3rd branch in a choice out of 3 elements
  */
 pub def sel_3_from_3(): 
-    Session[Cap[_env, ChoiceSelection3[protocol1, protocol2, protocol3]], Cap[_env, protocol3], Unit, _effect + Chan] = 
+    Session[Cap[_env, ChoiceSelection3[protocol1, protocol2, protocol3]], Cap[_env, protocol3], Unit, Chan] = 
     Session.Session(match (sender, _receiver) -> 
-        checked_ecast(
-            Channel.send(3i8 |> toObject, sender)
-        )
+        Channel.send(3i8 |> toObject, sender)
     )
 
 
@@ -333,11 +323,9 @@ pub def sel_3_from_3():
  * Select the 1st branch in a choice out of 4 elements
  */
 pub def sel_1_from_4(): 
-    Session[Cap[_env, ChoiceSelection4[protocol1, protocol2, protocol3, protocol4]], Cap[_env, protocol1], Unit, _effect + Chan] = 
+    Session[Cap[_env, ChoiceSelection4[protocol1, protocol2, protocol3, protocol4]], Cap[_env, protocol1], Unit, Chan] = 
     Session.Session(match (sender, _receiver) -> 
-        checked_ecast(
-            Channel.send(1i8 |> toObject, sender)
-        )
+        Channel.send(1i8 |> toObject, sender)
     )
 
 
@@ -345,11 +333,9 @@ pub def sel_1_from_4():
  * Select the 2nd branch in a choice out of 4 elements
  */
 pub def sel_2_from_4(): 
-    Session[Cap[_env, ChoiceSelection4[protocol1, protocol2, protocol3, protocol4]], Cap[_env, protocol2], Unit, _effect + Chan] = 
+    Session[Cap[_env, ChoiceSelection4[protocol1, protocol2, protocol3, protocol4]], Cap[_env, protocol2], Unit, Chan] = 
     Session.Session(match (sender, _receiver) -> 
-        checked_ecast(
-            Channel.send(2i8 |> toObject, sender)
-        )
+        Channel.send(2i8 |> toObject, sender)
     )
 
 
@@ -357,11 +343,9 @@ pub def sel_2_from_4():
  * Select the 3rd branch in a choice out of 4 elements
  */
 pub def sel_3_from_4(): 
-    Session[Cap[_env, ChoiceSelection4[protocol1, protocol2, protocol3, protocol4]], Cap[_env, protocol3], Unit, _effect + Chan] = 
+    Session[Cap[_env, ChoiceSelection4[protocol1, protocol2, protocol3, protocol4]], Cap[_env, protocol3], Unit, Chan] = 
     Session.Session(match (sender, _receiver) -> 
-        checked_ecast(
-            Channel.send(3i8 |> toObject, sender)
-        )
+        Channel.send(3i8 |> toObject, sender)
     )
 
 
@@ -369,11 +353,9 @@ pub def sel_3_from_4():
  * Select the 4th branch in a choice out of 4 elements
  */
 pub def sel_4_from_4(): 
-    Session[Cap[_env, ChoiceSelection4[protocol1, protocol2, protocol3, protocol4]], Cap[_env, protocol4], Unit, _effect + Chan] = 
+    Session[Cap[_env, ChoiceSelection4[protocol1, protocol2, protocol3, protocol4]], Cap[_env, protocol4], Unit, Chan] = 
     Session.Session(match (sender, _receiver) -> 
-        checked_ecast(
-            Channel.send(4i8 |> toObject, sender)
-        )
+        Channel.send(4i8 |> toObject, sender)
     )
 
 
@@ -381,11 +363,9 @@ pub def sel_4_from_4():
  * Select the 1st branch in a choice out of 5 elements
  */
 pub def sel_1_from_5(): 
-    Session[Cap[_env, ChoiceSelection5[protocol1, protocol2, protocol3, protocol4, protocol5]], Cap[_env, protocol1], Unit, _effect + Chan] = 
+    Session[Cap[_env, ChoiceSelection5[protocol1, protocol2, protocol3, protocol4, protocol5]], Cap[_env, protocol1], Unit, Chan] = 
     Session.Session(match (sender, _receiver) -> 
-        checked_ecast(
-            Channel.send(1i8 |> toObject, sender)
-        )
+        Channel.send(1i8 |> toObject, sender)
     )
 
 
@@ -393,11 +373,9 @@ pub def sel_1_from_5():
  * Select the 2nd branch in a choice out of 5 elements
  */
 pub def sel_2_from_5(): 
-    Session[Cap[_env, ChoiceSelection5[protocol1, protocol2, protocol3, protocol4, protocol5]], Cap[_env, protocol2], Unit, _effect + Chan] = 
+    Session[Cap[_env, ChoiceSelection5[protocol1, protocol2, protocol3, protocol4, protocol5]], Cap[_env, protocol2], Unit, Chan] = 
     Session.Session(match (sender, _receiver) -> 
-        checked_ecast(
-            Channel.send(2i8 |> toObject, sender)
-        )
+        Channel.send(2i8 |> toObject, sender)
     )
 
 
@@ -405,11 +383,9 @@ pub def sel_2_from_5():
  * Select the 3rd branch in a choice out of 5 elements
  */
 pub def sel_3_from_5(): 
-    Session[Cap[_env, ChoiceSelection5[protocol1, protocol2, protocol3, protocol4, protocol5]], Cap[_env, protocol3], Unit, _effect + Chan] = 
+    Session[Cap[_env, ChoiceSelection5[protocol1, protocol2, protocol3, protocol4, protocol5]], Cap[_env, protocol3], Unit, Chan] = 
     Session.Session(match (sender, _receiver) -> 
-        checked_ecast(
-            Channel.send(3i8 |> toObject, sender)
-        )
+        Channel.send(3i8 |> toObject, sender)
     )
 
 
@@ -417,11 +393,9 @@ pub def sel_3_from_5():
  * Select the 4th branch in a choice out of 5 elements
  */
 pub def sel_4_from_5(): 
-    Session[Cap[_env, ChoiceSelection5[protocol1, protocol2, protocol3, protocol4, protocol5]], Cap[_env, protocol4], Unit, _effect + Chan] = 
+    Session[Cap[_env, ChoiceSelection5[protocol1, protocol2, protocol3, protocol4, protocol5]], Cap[_env, protocol4], Unit, Chan] = 
     Session.Session(match (sender, _receiver) -> 
-        checked_ecast(
-            Channel.send(4i8 |> toObject, sender)
-        )
+        Channel.send(4i8 |> toObject, sender)
     )
 
 
@@ -429,11 +403,9 @@ pub def sel_4_from_5():
  * Select the 5th branch in a choice out of 5 elements
  */
 pub def sel_5_from_5(): 
-    Session[Cap[_env, ChoiceSelection5[protocol1, protocol2, protocol3, protocol4, protocol5]], Cap[_env, protocol5], Unit, _effect + Chan] = 
+    Session[Cap[_env, ChoiceSelection5[protocol1, protocol2, protocol3, protocol4, protocol5]], Cap[_env, protocol5], Unit, Chan] = 
     Session.Session(match (sender, _receiver) -> 
-        checked_ecast(
-            Channel.send(5i8 |> toObject, sender)
-        )
+        Channel.send(5i8 |> toObject, sender)
     )
 
 
@@ -441,11 +413,9 @@ pub def sel_5_from_5():
  * Select the 1st branch in a choice out of 6 elements
  */
 pub def sel_1_from_6(): 
-    Session[Cap[_env, ChoiceSelection6[protocol1, protocol2, protocol3, protocol4, protocol5, protocol6]], Cap[_env, protocol1], Unit, _effect + Chan] = 
+    Session[Cap[_env, ChoiceSelection6[protocol1, protocol2, protocol3, protocol4, protocol5, protocol6]], Cap[_env, protocol1], Unit, Chan] = 
     Session.Session(match (sender, _receiver) -> 
-        checked_ecast(
-            Channel.send(1i8 |> toObject, sender)
-        )
+        Channel.send(1i8 |> toObject, sender)
     )
 
 
@@ -453,11 +423,9 @@ pub def sel_1_from_6():
  * Select the 2nd branch in a choice out of 6 elements
  */
 pub def sel_2_from_6(): 
-    Session[Cap[_env, ChoiceSelection6[protocol1, protocol2, protocol3, protocol4, protocol5, protocol6]], Cap[_env, protocol2], Unit, _effect + Chan] = 
+    Session[Cap[_env, ChoiceSelection6[protocol1, protocol2, protocol3, protocol4, protocol5, protocol6]], Cap[_env, protocol2], Unit, Chan] = 
     Session.Session(match (sender, _receiver) -> 
-        checked_ecast(
-            Channel.send(2i8 |> toObject, sender)
-        )
+        Channel.send(2i8 |> toObject, sender)
     )
 
 
@@ -465,11 +433,9 @@ pub def sel_2_from_6():
  * Select the 3rd branch in a choice out of 6 elements
  */
 pub def sel_3_from_6(): 
-    Session[Cap[_env, ChoiceSelection6[protocol1, protocol2, protocol3, protocol4, protocol5, protocol6]], Cap[_env, protocol3], Unit, _effect + Chan] = 
+    Session[Cap[_env, ChoiceSelection6[protocol1, protocol2, protocol3, protocol4, protocol5, protocol6]], Cap[_env, protocol3], Unit, Chan] = 
     Session.Session(match (sender, _receiver) -> 
-        checked_ecast(
-            Channel.send(3i8 |> toObject, sender)
-        )
+        Channel.send(3i8 |> toObject, sender)
     )
 
 
@@ -477,11 +443,9 @@ pub def sel_3_from_6():
  * Select the 4th branch in a choice out of 6 elements
  */
 pub def sel_4_from_6(): 
-    Session[Cap[_env, ChoiceSelection6[protocol1, protocol2, protocol3, protocol4, protocol5, protocol6]], Cap[_env, protocol4], Unit, _effect + Chan] = 
+    Session[Cap[_env, ChoiceSelection6[protocol1, protocol2, protocol3, protocol4, protocol5, protocol6]], Cap[_env, protocol4], Unit, Chan] = 
     Session.Session(match (sender, _receiver) -> 
-        checked_ecast(
-            Channel.send(4i8 |> toObject, sender)
-        )
+        Channel.send(4i8 |> toObject, sender)
     )
 
 
@@ -489,11 +453,9 @@ pub def sel_4_from_6():
  * Select the 5th branch in a choice out of 6 elements
  */
 pub def sel_5_from_6(): 
-    Session[Cap[_env, ChoiceSelection6[protocol1, protocol2, protocol3, protocol4, protocol5, protocol6]], Cap[_env, protocol5], Unit, _effect + Chan] = 
+    Session[Cap[_env, ChoiceSelection6[protocol1, protocol2, protocol3, protocol4, protocol5, protocol6]], Cap[_env, protocol5], Unit, Chan] = 
     Session.Session(match (sender, _receiver) -> 
-        checked_ecast(
-            Channel.send(5i8 |> toObject, sender)
-        )
+        Channel.send(5i8 |> toObject, sender)
     )
 
 
@@ -501,11 +463,9 @@ pub def sel_5_from_6():
  * Select the 6th branch in a choice out of 6 elements
  */
 pub def sel_6_from_6(): 
-    Session[Cap[_env, ChoiceSelection6[protocol1, protocol2, protocol3, protocol4, protocol5, protocol6]], Cap[_env, protocol6], Unit, _effect + Chan] = 
+    Session[Cap[_env, ChoiceSelection6[protocol1, protocol2, protocol3, protocol4, protocol5, protocol6]], Cap[_env, protocol6], Unit, Chan] = 
     Session.Session(match (sender, _receiver) -> 
-        checked_ecast(
-            Channel.send(6i8 |> toObject, sender)
-        )
+        Channel.send(6i8 |> toObject, sender)
     )
 
 /**
@@ -704,20 +664,20 @@ pub def session_offer_6 (
 /**
  * Enter a recursive protocol definition
  */
-pub def enter() : Session[Cap[env, Rec[recurProto]], Cap[(recurProto, env), recurProto], Unit, _effect] = 
-    Session.Session(_ -> checked_ecast(()))
+pub def enter() : Session[Cap[env, Rec[recurProto]], Cap[(recurProto, env), recurProto], Unit, {}] = 
+    Session.Session(_ -> ())
 
 /**
  * Access the outermost recursive variable (at index Z)
  */
-pub def zero() : Session[Cap[(recurProto, env), Var[Z]], Cap[(recurProto, env), recurProto], Unit, _effect] = 
-    Session.Session(_ -> checked_ecast(()))
+pub def zero() : Session[Cap[(recurProto, env), Var[Z]], Cap[(recurProto, env), recurProto], Unit, {}] = 
+    Session.Session(_ -> ())
 
 /**
  * Access a recursive variable at a greater depth
  */
-pub def suc() : Session[Cap[(recurProto, env), Var[Suc[index]]], Cap[env, Var[index]], Unit, _effect] = 
-    Session.Session(_ -> checked_ecast(()))
+pub def suc() : Session[Cap[(recurProto, env), Var[Suc[index]]], Cap[env, Var[index]], Unit, {}] = 
+    Session.Session(_ -> ())
 
 /**
  * Rendezvous point for establishing a session between two parties
@@ -783,3 +743,16 @@ def !<>!(f1: Session[Cap[e, Rec[r]], Cap[(r,e), r], a1, ef1 ],
     Session[Cap[e, Recursion[r]], k, a2, ef1 + ef2]
      =
     IxMonad.ixbind(f1, (_ -> loop()))  
+
+enum EffProxy[_ : Eff]{
+    case Proxy
+}
+
+def session_subeffect(s: Session[a, b, c, effects]) : Session[a, b, c, effects + effects2] = 
+    let Session.Session(f) = s;
+    Session.Session(chan -> checked_ecast(f(chan)))
+
+def session_exact_subeffect[a: Type, b: Type, c: Type, effects: Eff, effects2: Eff](_: EffProxy[effects2], s: Session[a, b, c, effects]) : Session[a, b, c, effects + effects2]  = 
+    let Session.Session(f) = s;
+    Session.Session(chan -> checked_ecast(f(chan)))
+

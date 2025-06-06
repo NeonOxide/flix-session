@@ -70,11 +70,9 @@ f"""
  * Select the {ordinal(j)} branch in a choice out of {i} elements
  */
 pub def sel_{j}_from_{i}(): 
-    Session[Cap[_env, ChoiceSelection{i}[{comma_separated_protocols}]], Cap[_env, protocol{j}], Unit, _effect + Chan] = 
+    Session[Cap[_env, ChoiceSelection{i}[{comma_separated_protocols}]], Cap[_env, protocol{j}], Unit, Chan] = 
     Session.Session(match (sender, _receiver) -> 
-        checked_ecast(
-            Channel.send({j}i8 |> toObject, sender)
-        )
+        Channel.send({j}i8 |> toObject, sender)
     )
 """)
 

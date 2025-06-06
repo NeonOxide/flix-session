@@ -1,4 +1,5 @@
 mod PrintServerExample {
+    use SessionGraph.generate_single_dot_graph;
     use String.unwrap
     use Console.print
     use SesChans.session_recv
@@ -15,6 +16,9 @@ mod PrintServerExample {
      * 1. Close the connection
      * 2. Receive a string, print it, and continue the session
      */
+
+
+
     def server(): Session[
         Cap[Unit, Recursion[ChoiceOffer2[Empty, Receive[String, Var[Z]]]]],
         Unit,
@@ -48,20 +52,21 @@ mod PrintServerExample {
         Cap[Unit, Recursion[ChoiceSelection2[Empty, Send[String, Var[Z]]]]],
         Unit, 
         Unit, 
-        Console + Chan + NonDet
+        Chan + Console
     ] = {
         def clientLoop(lineCount) = (
             // Prompt user for input
             let _ = Console.print("Enter something to print, q to exit: > ");
             let userInput = readln();
-            
             if (userInput == "q")
                 // Option 1: Send final message with line count and close connection
+                
                 sel_2_from_2() >>>|
                 session_send("lines sent ${lineCount}") >>>|
                 zero() >>>| 
                 sel_1_from_2() >>>| 
-                session_close()
+                session_close() 
+                |> session_subeffect
             else
                 // Option 2: Send the message and continue the session
                 sel_2_from_2() >>>| 
@@ -86,7 +91,7 @@ mod PrintServerExample {
                 session_request(rendezvousPoint, client())
             }
         };
-        
+        // println(generate_single_dot_graph(client(), "Hola"));
         Console.handle(handlr)()
     }
 }

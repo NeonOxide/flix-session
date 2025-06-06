@@ -36,7 +36,7 @@ mod SesChans {
         case x: Int64 => unchecked_cast(Box.box(x) as Object)
         case x: _ => unchecked_cast(x as Object)
     }
-
+    
     /**
      * Creates a session that sends a value through a channel.
      *
